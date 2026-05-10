@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nema Sweets - Authentic Taste & Tradition</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- OWNER LOGIN MODAL -->
+<div id="ownerLoginModal" class="modal">
+    <div class="modal-content small-modal">
+        <span class="close-btn" onclick="closeModal('ownerLoginModal')">&times;</span>
+        <div class="modal-header">
+            <i class="fas fa-crown modal-icon" style="color:#f1c40f"></i>
+            <h2>Owner Login</h2>
+            <p>Apna password daalo</p>
+        </div>
+        <form id="ownerLoginForm">
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="ownerPassword" required placeholder="Owner password">
+            </div>
+            <p id="ownerError" style="display:none;color:#ef4444;font-size:0.85rem;margin-bottom:10px;text-align:center">
+                ❌ Galat password! Dobara try karein.
+            </p>
+            <button type="submit" class="btn btn-primary full-width">
+                <i class="fas fa-sign-in-alt"></i> Login Karein
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- OWNER WHATSAPP NUMBERS MODAL -->
+<div id="ownerNumbersModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('ownerNumbersModal')">&times;</span>
+        <div class="modal-header">
+            <i class="fab fa-whatsapp modal-icon" style="color:#25d366"></i>
+            <h2>WhatsApp Numbers</h2>
+            <p>Orders yahan aayenge — manage karein</p>
+        </div>
+
+        <!-- Saved Numbers List -->
+        <div id="savedNumbersList" style="margin-bottom:20px;"></div>
+
+        <!-- Add New Number -->
+        <div style="background:#f9f9f9;border-radius:12px;padding:18px;border:1px solid #eee;">
+            <label style="font-weight:600;font-size:0.88rem;display:block;margin-bottom:10px;">
+                <i class="fab fa-whatsapp" style="color:#25d366"></i> Naya Number Add Karein
+            </label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <input type="text" id="newNumberName" placeholder="Naam (Ex: Owner)" style="flex:1;min-width:120px;">
+                <input type="tel" id="newNumberPhone" placeholder="Number (Ex: 9301579370)" style="flex:1;min-width:140px;">
+            </div>
+            <button onclick="addOwnerNumber()" class="btn btn-primary full-width" style="margin-top:12px;border-radius:10px;">
+                <i class="fas fa-plus"></i> Number Add Karein
+            </button>
+        </div>
+        <p style="font-size:0.75rem;color:#999;margin-top:10px;text-align:center;">
+            * Orders sabhi active numbers pe jayenge
+        </p>
+    </div>
+</div>
+
+<!-- CUSTOMER LOGIN MODAL -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+        <div class="modal-header">
+            <i class="fas fa-user-circle modal-icon"></i>
+            <h2>Login / Register</h2>
+            <p>Order karne ke liye apni details bharein</p>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Poora Naam *</label>
+                <input type="text" id="userName" required placeholder="Apna naam likhein">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-phone"></i> Phone Number *</label>
+                <input type="tel" id="userPhone" required placeholder="Apna phone number">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-map-marker-alt"></i> Poora Pata *</label>
+                <textarea id="userAddress" required placeholder="Ghar ka poora pata likhein..." rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email (Optional)</label>
+                <input type="email" id="userEmail" placeholder="Email address">
+            </div>
+            <button type="submit" class="btn btn-primary full-width">
+                <i class="fas fa-check-circle"></i> Login Karein
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div id="orderModal" class="modal">
+    <div class="modal-content small-modal">
+        <span class="close-btn" onclick="closeModal('orderModal')">&times;</span>
+        <div class="modal-header">
+            <i class="fas fa-shopping-bag modal-icon"></i>
+            <h2>Order Karein</h2>
+            <p id="orderModalTitle">Mithai ka naam</p>
+        </div>
+        <div class="order-summary-box">
+            <span id="orderSweetName">-</span>
+            <span id="orderSweetPrice" class="price-tag">-</span>
+        </div>
+        <div class="form-group">
+            <label><i class="fas fa-weight"></i> Quantity (kg mein)</label>
+            <div class="qty-controls">
+                <button type="button" class="qty-btn" onclick="changeQty(-0.25)">-</button>
+                <input type="number" id="quantityInput" min="0.25" step="0.25" value="1">
+                <button type="button" class="qty-btn" onclick="changeQty(0.25)">+</button>
+            </div>
+            <small>Minimum: 250 gram (0.25 kg)</small>
+        </div>
+        <div id="totalDisplay" class="total-display">
+            <span>Total Amount:</span>
+            <span id="totalAmount" class="total-price">Rs. 0</span>
+        </div>
+        <button id="sendOrderBtn" class="btn btn-whatsapp full-width">
+            <i class="fab fa-whatsapp"></i> WhatsApp pe Order Bhejein
+        </button>
+        <p class="modal-note">* Order details seedha WhatsApp mein chali jayengi</p>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <div class="logo">
+            <span class="logo-text">Nema <span>Sweets</span></span>
+        </div>
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li id="addSweetNavLink" style="display:none"><a href="#add-sweet">Add Sweet</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li>
+                <a href="#" id="ownerBtn" class="owner-link" onclick="openOwnerLogin(); return false;">
+                    <i class="fas fa-crown"></i> <span>Owner</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" id="loginBtn" class="login-link" onclick="openModal('loginModal'); return false;">
+                    <i class="fas fa-user"></i> <span id="loginBtnText">Login</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- CHAT NOTE BAR -->
+<div class="chat-note-bar">
+    <div class="container">
+        <i class="fab fa-whatsapp chat-note-icon"></i>
+        <span>💬 <strong>Note:</strong> Order karo ya koi bhi sawal poochho —
+        <strong>WhatsApp pe seedha hamare se baat karein!</strong>
+        Hum jaldi reply karenge. 🍬</span>
+    </div>
+</div>
+
+<!-- HERO -->
+<section id="home" class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Deliciously Traditional, <span>Purely Sweet.</span></h1>
+            <p>Surkhi ki asli mithaas ka anubhav karein — haath se bani mithai, peedhiyon ki paramparaa ke saath.</p>
+            <div class="hero-btns">
+                <a href="#menu" class="btn btn-primary"><i class="fas fa-shopping-cart"></i> Order Now</a>
+                <a href="#contact" class="btn btn-secondary"><i class="fas fa-map-marker-alt"></i> Visit Us</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=800&q=80" alt="Nema Sweets">
+        </div>
+    </div>
+</section>
+
+<!-- SEARCH & FILTER -->
+<section class="search-section">
+    <div class="container">
+        <div class="search-wrapper">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="sweetSearch" placeholder="Mithai khojein... (Laddu, Barfi, Cake)">
+            </div>
+            <div class="category-filters">
+                <button class="filter-btn active" data-filter="all">Sab</button>
+                <button class="filter-btn" data-filter="Traditional Sweets">Traditional</button>
+                <button class="filter-btn" data-filter="Cakes">Cakes</button>
+                <button class="filter-btn" data-filter="Special Items">Special</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MENU -->
+<section id="menu" class="menu-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Hamari Meethi Dukaan</h2>
+            <p>Har mauke ke liye khaas mithai</p>
+        </div>
+        <div class="sweet-grid" id="sweetGrid"></div>
+    </div>
+</section>
+
+<!-- ADD SWEET (OWNER ONLY) -->
+<section id="add-sweet" class="add-sweet-section" style="display:none">
+    <div class="container">
+        <div class="add-sweet-wrapper">
+            <div class="form-image">
+                <img id="previewImage" src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=800&q=80" alt="Preview">
+            </div>
+            <div class="form-container">
+                <h3><i class="fas fa-plus-circle"></i> Nai Mithai Jodein</h3>
+                <p>Shop mein nai mithai add karein</p>
+                <form id="addSweetForm">
+                    <div class="form-group">
+                        <label>Mithai ka Naam</label>
+                        <input type="text" id="sweetName" required placeholder="Ex: Motichoor Laddu">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (Rs./kg)</label>
+                            <input type="number" id="sweetPrice" required placeholder="Ex: 400">
+                        </div>
+                        <div class="form-group">
+                            <label>Rating (1-5)</label>
+                            <input type="number" id="sweetRating" min="1" max="5" step="0.1" placeholder="4.5">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="sweetCategory" required>
+                            <option value="Traditional Sweets">Traditional Sweets</option>
+                            <option value="Cakes">Cakes</option>
+                            <option value="Special Items">Special Items</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="sweetDescription" rows="2" required placeholder="Kya khaas hai is mein?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Mithai ki Photo</label>
+                        <div class="file-input-wrapper">
+                            <button type="button" class="btn btn-secondary file-btn" onclick="document.getElementById('sweetImageFile').click()">
+                                <i class="fas fa-image"></i> Photo Chunein
+                            </button>
+                            <input type="file" id="sweetImageFile" accept="image/*" style="display:none">
+                            <span id="fileNameDisplay">Koi file nahi chuni</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">
+                        <i class="fas fa-plus"></i> Shop mein Add Karein
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="reviews-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Customer Reviews</h2>
+            <p>Apna anubhav share karein</p>
+        </div>
+        <div class="reviews-grid">
+            <div class="review-form-container">
+                <form id="reviewForm">
+                    <h3><i class="fas fa-star"></i> Review Likhein</h3>
+                    <div class="form-group">
+                        <label>Aapka Naam</label>
+                        <input type="text" id="reviewerName" required placeholder="Naam likhein">
+                    </div>
+                    <div class="form-group">
+                        <label>Khaayi gayi Mithai</label>
+                        <select id="reviewSweetSelect" required>
+                            <option value="">Mithai chunein...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="star-rating">
+                            <input type="radio" name="rating" value="5" id="s5"><label for="s5">&#9733;</label>
+                            <input type="radio" name="rating" value="4" id="s4"><label for="s4">&#9733;</label>
+                            <input type="radio" name="rating" value="3" id="s3"><label for="s3">&#9733;</label>
+                            <input type="radio" name="rating" value="2" id="s2"><label for="s2">&#9733;</label>
+                            <input type="radio" name="rating" value="1" id="s1"><label for="s1">&#9733;</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Aapka Feedback</label>
+                        <textarea id="reviewText" rows="3" required placeholder="Kya pasand aaya?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">
+                        <i class="fas fa-paper-plane"></i> Review Submit Karein
+                    </button>
+                </form>
+            </div>
+            <div class="reviews-list-container">
+                <div id="reviewsList"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Hamari Dukaan Par Aaiye</h3>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div><strong>Pata</strong><p>Bus Stand, Narsinghpur Road Main, Surkhi, Madhya Pradesh</p></div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <div><strong>Phone</strong><p><a href="tel:+919301579370">+91 93015 79370</a></p></div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div><strong>Timing</strong><p>Roz Khula: Subah 8:00 - Raat 9:00</p></div>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14640.482661458!2d78.74500!3d23.60500!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3978c95b4a9a9a9b%3A0x7e1b2c3d4e5f6a7b!2sSurkhi%2C%20Madhya%20Pradesh%20470229!5e0!3m2!1shi!2sin!4v1700000000000!5m2!1shi!2sin"
+                    width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <span class="logo-text" style="font-size:1.4rem">Nema <span style="color:#f1c40f">Sweets</span></span>
+            <p>&copy; 2026 Nema Sweets. All rights reserved.</p>
+            <p>Made with <span style="color:#e74c3c">&#10084;</span> for Sweet Lovers</p>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
